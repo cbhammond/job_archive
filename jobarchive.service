@@ -1,0 +1,5 @@
+[Service]
+Type=simple
+ExecStart=/usr/local/jobarchive/job_archive
+TimeoutStopSec=5
+KillMode=process

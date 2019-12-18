@@ -106,12 +106,9 @@ struct SlurmJobDirectory {
     }
 };
 
-bool invalidChar (unsigned char c)
+bool invalidChar (char c)
 {
-    // GOAL: return true when char is *not* valid.
-    // *valid* char set: (c>=0 && c<128) && c!=1
-    // ACTION: return false when char *does* match this set 
-    return !(c>=0 && c<128 && c!=1);
+    return !(c>=0 && c <128);
 }
 void stripUnicode(string & str)
 {
@@ -150,7 +147,8 @@ struct ParseBuffer {
     string splitUserId(const string& str) {
       int ix1 = str.find("/home/");
       if (ix1 < 0) return string("");
-      string userId = str.substr(ix1+6);
+      // at IU we have homedirs hashed of the form /<mount>/home/u/s/username so skip /home/u/s/
+      string userId = str.substr(ix1+10);
       int ix2 = userId.find("/");
       if (ix2 < 0) return userId;
       return userId.substr(0, ix2);
@@ -511,8 +509,8 @@ int main( int argc, char **argv ) {
         std::cerr << "**** debug = " << debug << " ****" << std::endl;
     }
 
-    string srcSpoolHashPath = "/var/spool/slurm/hash.";
-    string targDestPath = "/var/slurm/jobscript_archive";
+    string srcSpoolHashPath = "/var/spool/slurm/ctld/hash.";
+    string targDestPath = "/home/slurm/var/jobscript_archive";
     Queue<SlurmJobDirectory> queue;
 
     int QUE_THD_SIZE=2;
